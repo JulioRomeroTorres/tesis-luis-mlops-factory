@@ -1,0 +1,71 @@
+file_list:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/file_list.pkl
+
+divided_file_list:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/divided_file_list.pkl
+
+entitie_list:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/entitie_list.pkl
+
+invoice_df:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/invoice_df.pkl
+
+sited_df:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/sited_df.pkl
+
+failed_executions_df:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/failed_executions_df.pkl
+
+invoice_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/invoice_entities.pkl
+
+sited_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/sited_entities.pkl
+
+credit_note_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/credit_note_entities.pkl
+
+pre_settlement_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/pre_settlement_entities.pkl
+
+settlement_summary_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/settlement_summary_entities.pkl
+
+settlement_type_1_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/settlement_type_1_entities.pkl
+
+settlement_type_2_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/settlement_type_2_entities.pkl
+
+guarantee_letter_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/guarantee_letter_entities.pkl
+
+epicrisis_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/epicris_entities.pkl
+
+prescription_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/prescription_entities.pkl
+
+pharmacy_attention_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/pharmacy_attention_entities.pkl
+
+operatory_report_entities:
+  type: pickle.PickleDataset
+  filepath: gs://${globals:environment_config.${globals:environment_suffix}.bucket}/ml-pm25/02_intermediate/operatory_report_entities.pkl

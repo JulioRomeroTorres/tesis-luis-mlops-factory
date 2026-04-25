@@ -1,0 +1,1 @@
+SELECT * FROM {{project_id}}.siniestro_salud_auna.resumen_correo_diario_auditoria_proveedores_final

@@ -1,0 +1,1 @@
+SELECT * from {{project_id}}.siniestro_salud_auna.reporte_excel_auditoria_final

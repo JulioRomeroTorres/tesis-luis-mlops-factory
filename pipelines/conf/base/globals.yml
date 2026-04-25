@@ -1,0 +1,10 @@
+environment_config:
+  dev:
+    project: rs-nprd-dlk-ia-dev-aif-d3d9
+    bucket: rs-nprd-dlk-ia-dev-aif-ml-pipeline
+  test:
+    project: rs-nprd-dlk-ia-tst-aif-9a19
+    bucket: rs-nprd-dlk-ia-tst-aif-ml-pipeline
+  prod:
+    project: rs-prd-dlk-ia-prd-aif-c735
+    bucket: rs-prd-dlk-ia-prod-aif-ml-pipeline

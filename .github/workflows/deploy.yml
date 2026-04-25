@@ -1,0 +1,50 @@
+name: 1. Deploy Kedro Pipeline 
+
+on:
+  workflow_dispatch:
+    inputs:
+      _ENVIRONMENT:
+        description: 'Environment name'
+        required: true
+        default: "dev"
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs._ENVIRONMENT }} environment
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: ${{ github.event.inputs._ENVIRONMENT }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Verify deployment information
+      run: |
+        echo "Deploying to DEV ${{ github.event.inputs._ENVIRONMENT }}"
+        echo "Project ID: ${{ vars.PROJECT_ID }}"
+        echo "Registry: ${{ vars.CONT_REGISTRY_NAME }}"
+        echo "Repository: ${{ vars.CONT_REPOSITORY_NAME }}"
+        echo "Image name: ${{ vars.CONT_IMAGE_PROCESS_NAME }}"
+        echo "Dag Schedule Interval: ${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
+        echo "Image name: ${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }}"
+        echo "Dag Schedule Interval: ${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
+        echo "Dag bucket Path: ${{ vars.DAG_BUCKET_PATH }}"
+        echo "Dag Env: ${{ vars.DAG_ENV }}"
+      
+    - name: Google Auth
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - name: Trigger Cloud Build
+      run: |
+        SCHEDULE_PROCESS_INTERVAL="${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
+        SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
+        
+        gcloud builds submit --project=${{ vars.PROJECT_ID }} \
+          --substitutions=_CONT_IMAGE_NAME=${{ vars.CONT_IMAGE_NAME }},_CONT_IMAGE_PROCESS_NAME=${{ vars.CONT_IMAGE_PROCESS_NAME }},_CONT_IMAGE_SUMMARY_PROCESS_NAME=${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_DAG_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_PROCESS_INTERVAL",_DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_SUMMARY_PROCESS_INTERVAL",_DAG_BUCKET_PATH=${{ vars.DAG_BUCKET_PATH }},_DAG_ENV=${{ vars.DAG_ENV }} \
+          --config=cloudbuild.yaml

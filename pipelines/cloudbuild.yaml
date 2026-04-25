@@ -1,0 +1,71 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build', 
+    '-t',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--cache-from',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '.'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
+
+- name: 'ubuntu'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p dags/replaced
+    
+    echo "Mostrando archivos en dags/"
+    ls -l dags/
+
+    cat dags/dag_template_process.py
+
+    sed -e "s@DAG_NAME@${_CONT_IMAGE_PROCESS_NAME}@g" \
+        -e "s@DAG_ENV@${_DAG_ENV}@g" \
+        -e "s@DAG_SCHEDULE_INTERVAL@${_DAG_PROCESS_SCHEDULE_INTERVAL}@g" \
+        -e "s@PROJECT_ID@${_PROJECT_ID}@g" \
+        -e "s@REGISTRY_NAME@${_CONT_REGISTRY_NAME}@g" \
+        -e "s@REPOSITORY_NAME@${_CONT_REPOSITORY_NAME}@g" \
+        -e "s@IMAGE_NAME@${_CONT_IMAGE_PROCESS_NAME}@g" \
+        dags/dag_template_process.py > dags/replaced/${_CONT_IMAGE_PROCESS_NAME}.py
+
+    echo "Archivo generado: dags/replaced/${_CONT_IMAGE_PROCESS_NAME}.py"
+    cat dags/replaced/${_CONT_IMAGE_PROCESS_NAME}.py
+
+- name: 'ubuntu'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p dags/replaced
+    
+    echo "Mostrando archivos en dags/"
+    ls -l dags/
+
+    cat dags/dag_template_summary.py
+
+    sed -e "s@DAG_NAME@${_CONT_IMAGE_SUMMARY_PROCESS_NAME}@g" \
+    -e "s@DAG_ENV@${_DAG_ENV}@g" \
+    -e "s@DAG_SCHEDULE_INTERVAL@${_DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL}@g" \
+    -e "s@PROJECT_ID@${_PROJECT_ID}@g" \
+    -e "s@REGISTRY_NAME@${_CONT_REGISTRY_NAME}@g" \
+    -e "s@REPOSITORY_NAME@${_CONT_REPOSITORY_NAME}@g" \
+    -e "s@IMAGE_NAME@${_CONT_IMAGE_PROCESS_NAME}@g" \
+    dags/dag_template_summary.py > dags/replaced/${_CONT_IMAGE_SUMMARY_PROCESS_NAME}.py
+    
+    echo "Archivo generado: dags/replaced/${_CONT_IMAGE_SUMMARY_PROCESS_NAME}.py"
+    cat dags/replaced/${_CONT_IMAGE_SUMMARY_PROCESS_NAME}.py
+
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'cp', 'dags/replaced/*.py', 'gs://${_DAG_BUCKET_PATH}/dags']
+
+images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
+options:
+  logging: CLOUD_LOGGING_ONLY

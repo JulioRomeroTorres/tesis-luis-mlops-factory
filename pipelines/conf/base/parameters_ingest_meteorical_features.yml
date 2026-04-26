@@ -3,3 +3,25 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.15/configuration/parameters.html
+senamhi_enpoints:
+  features: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
+  target: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora.php"
+
+db_name: ""
+table_name: ""
+
+features_names:
+  - 'VELO'
+  - 'HUME'
+  - 'TEMP'
+
+targets_names:
+  - N_PM25
+
+stations_ids: 
+  - '112265'
+  - '111287'
+  - '111286'
+  - '112265'
+  - '112193'
+  - '112233'

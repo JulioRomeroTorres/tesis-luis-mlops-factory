@@ -3,3 +3,37 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.15/configuration/parameters.html
+start_period: "01/10/2025"
+end_period: "10/10/2025"
+
+feature_table_name: ""
+target_table_name: ""
+
+hyperparameters:
+  n_estimators: 2590
+  learning_rate: 0.035648277949081186,
+  max_depth: 9,
+  subsample: 0.9733121035675474,
+  colsample_bytree: 0.8497416192535173,
+  random_state: 39,
+  n_jobs: -1,
+  gamma: 0.295633685837714,
+  reg_alpha: 0.4368808744336672,
+  reg_lambda: 2.182549739351831
+
+windows_rolling: 
+  - 6
+  - 24
+
+lag_features: 
+  - 1
+  - 2
+  - 24
+  
+lag_target: 
+  - 1
+  - 24
+
+datetime_column_name: 'reading_datetime'
+
+velocity_column_name: ""

@@ -4,9 +4,9 @@ from __future__ import annotations
 from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
-from .pipelines.batch_process.pipeline import create_pipeline as create_batch_process
-from .pipelines.export_to_bigquery.pipeline import create_pipeline as export_data_to_bigquery
-from .pipelines.send_notificaction import create_pipeline as send_notificaction
+from .pipelines.ingest_meteorical_features.pipeline import create_pipeline as ingest_meteorical_features
+from .pipelines.training.pipeline import create_pipeline as training
+from .pipelines.prediction.pipeline import create_pipeline as prediction
 
 def register_pipelines() -> dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -16,7 +16,7 @@ def register_pipelines() -> dict[str, Pipeline]:
     """
     pipelines = find_pipelines()
     pipelines["__default__"] = sum(pipelines.values())
-    pipelines["batch_process"] = create_batch_process()
-    pipelines["export_to_bigquery"] = export_data_to_bigquery()
-    pipelines["send_notification"] = send_notificaction()
+    pipelines["ingest_meteorical_features"] = ingest_meteorical_features()
+    pipelines["trainig"] = training()
+    pipelines["prediction"] = prediction()
     return pipelines

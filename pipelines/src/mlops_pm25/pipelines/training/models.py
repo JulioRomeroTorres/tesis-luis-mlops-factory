@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class XgboostHyperParameters(BaseMode):
+class XgboostHyperParameters(BaseModel):
     n_estimators: int = 1000,
     learning_rate: float = 0.01,
     max_depth: int = 1,

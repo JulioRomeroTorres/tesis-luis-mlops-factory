@@ -34,9 +34,12 @@ lag_target:
   - 1
   - 24
 
-datetime_column_name: 'reading_datetime'
+datetime_column_name: 'READING_DATETIME'
+merge_columns: 
+  - 'READING_DATETIME'
+  - 'STATION_ID'
 
-velocity_column_name: "VEL"
+velocity_column_name: "VELO"
 
 bucket_name: ""
 

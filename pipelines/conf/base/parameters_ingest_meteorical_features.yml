@@ -17,7 +17,17 @@ features_names:
   - 'HUME'
   - 'TEMP'
 
+station_features_names:
+  - 'STATION_ID'
+  - 'VELO'
+  - 'HUME'
+  - 'TEMP'
+
 targets_names:
+  - N_PM25
+
+station_targets_names:
+  - 'STATION_ID'
   - N_PM25
 
 stations_ids: 

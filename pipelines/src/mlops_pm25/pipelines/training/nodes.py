@@ -32,10 +32,10 @@ def get_meteorological_features(
     db_client = FireStoreClient(db_name, table_name)
     elements = db_client.get_elements_by_filters(
         filters=[
-            ('reading_datetime', '>=', start_period),
-            ('reading_datetime', '<=', end_period),
+            ('READING_DATETIME', '>=', start_period),
+            ('READING_DATETIME', '<=', end_period),
         ],
-        projections=[*features_names, 'reading_datetime']
+        projections=[*features_names, 'READING_DATETIME']
         )
     
     return pd.DataFrame(elements)
@@ -93,6 +93,11 @@ def create_cinematic_feautes(
     meteorological_df['VELO_INV'] = 1 / (meteorological_df[velocity_column_name] + 1e-6)
 
     return meteorological_df, new_features
+
+def create_label_station_feature(
+    meteorological_df: pd.DataFrame,
+):
+    return pd.get_dummies(meteorological_df, columns=['STATION_ID'], prefix='LABEL_STATION_ID')
 
 def training(
     meteorological_df: pd.DataFrame,

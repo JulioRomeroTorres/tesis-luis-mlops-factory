@@ -10,7 +10,7 @@ from .nodes import (
     create_lag_meteorological_features,
     create_rolling_meteorological_features,
     create_cinematic_feautes,
-    training, save_artifacts
+    training, save_artifacts, create_label_station_feature
 )
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -20,7 +20,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             func= get_meteorological_features,
             inputs= [
                     "params:db_name",
-                    "params:feature_table_name", "params:features_names",
+                    "params:feature_table_name", "params:station_features_names",
                      "params:start_period",
                      "params:end_period"],
             outputs="feature_data",
@@ -30,7 +30,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             func= get_meteorological_features,
             inputs= [
                     "params:db_name",
-                    "params:target_table_name", "params:target_names",
+                    "params:target_table_name", "params:station_target_names",
                      "params:start_period",
                      "params:end_period"],
             outputs="target_data",
@@ -38,7 +38,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
         node(
             func= merge_information,
-            inputs= ["feature_data", "target_data", "params:datetime_column_name",],
+            inputs= ["feature_data", "target_data", "params:merge_columns",],
             outputs="merged_data",
             name="Merged_Data"
         ),
@@ -90,8 +90,15 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
 
         node(
+            func= create_label_station_feature,
+            inputs= ["cinematic_data", "params:velocity_column_name"],
+            outputs="label_station_id_feature",
+            name="Get_Cinematic_Data"
+        ),
+
+        node(
             func= training,
-            inputs= ["cinematic_data", "params:target_names", "params:hyperparameters"],
+            inputs= ["label_station_id_feature", "params:target_names", "params:hyperparameters"],
             outputs=["model", "rmse_scores", "mae_scores", "r2_scores", "feature_importances"],
             name="Training_model"
 

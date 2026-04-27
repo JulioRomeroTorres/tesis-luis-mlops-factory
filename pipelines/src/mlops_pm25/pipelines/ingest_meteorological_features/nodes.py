@@ -26,20 +26,23 @@ def get_meteorological_variables_data(
 
     return df[['READING_DATETIME', *var_names]]
 
+def get_meteorological_data_by_station_v2(
+    stations_ids: List[str], var_names: List[str], 
+    endpoint: str, start_period: str,
+    end_period: str,
+):
+    return None
+
+def ingest_features(db_name: str, table_name: str, data: pd.DataFrame):
+    return None
+
 def get_meteorological_data_by_station(
     stations_ids: List[str], var_names: List[str], 
     endpoint: str, start_period: str,
     end_period: str,
 ):
 
-    meteorological_df = pd.DataFrame({
-        'VELO': pd.Series(dtype='float'),
-        'HUME': pd.Series(dtype='float'),
-        'TEMP': pd.Series(dtype='float'),
-        'STATION_ID': pd.Series(dtype='str'),
-        'READING_DATETIME': pd.Series(dtype='datetime64[ns]')
-    })
-
+    meteorological_df = pd.DataFrame()
     lista_dfs = []
 
     for station_id in stations_ids:
@@ -51,6 +54,6 @@ def get_meteorological_data_by_station(
     meteorological_df = pd.concat(lista_dfs, ignore_index=True)
     return meteorological_df
 
-def ingest_features(db_name: str, table_name: str, data: pd.DataFrame):
-    db_client = FireStoreClient(table_name)
+def ingest_features_v2(db_name: str, table_name: str, data: pd.DataFrame):
+    db_client = FireStoreClient(db_name, table_name)
     db_client.bulk_insert_elements(data.to_dict(orient='records'))

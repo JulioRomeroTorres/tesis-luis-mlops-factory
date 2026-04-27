@@ -11,7 +11,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func= get_meteorological_data_by_station,
             inputs= ["params:stations_ids", "params:features_names",
-                     "params:senamhi_enpoints.features", "params:start_period",
+                     "params:senamhi_enpoint", "params:start_period",
                      "params:end_period"],
             outputs="meteorological_data",
             name="Get_Meteorolofical_data"

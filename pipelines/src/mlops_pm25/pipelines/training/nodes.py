@@ -22,13 +22,14 @@ from .domain.utils import (
 from kedro_datasets.pickle import PickleDataset
 
 def get_meteorological_features(
+    db_name: str, 
     table_name: str,
     features_names: List[str],
     start_period: str,
     end_period: str
 ) -> pd.DataFrame:
     
-    db_client = FireStoreClient(table_name)
+    db_client = FireStoreClient(db_name, table_name)
     elements = db_client.get_elements_by_filters(
         filters=[
             ('reading_datetime', '>=', start_period),

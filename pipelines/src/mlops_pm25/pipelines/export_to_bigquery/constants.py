@@ -1,1 +1,0 @@
-SUFFIX_ENTITY = "_entities"

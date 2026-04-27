@@ -7,8 +7,10 @@ senamhi_enpoints:
   features: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
   target: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora.php"
 
-db_name: ""
-table_name: ""
+senamhi_enpoint: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
+
+db_name: "meteorological-data"
+table_name: "senamhi-information" #pm25-inference
 
 features_names:
   - 'VELO'

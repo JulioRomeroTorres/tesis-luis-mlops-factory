@@ -6,8 +6,8 @@
 start_period: "01/10/2025"
 end_period: "10/10/2025"
 
-feature_table_name: ""
-target_table_name: ""
+feature_table_name: "senamhi-information"
+target_table_name: "pm25-inference"
 
 hyperparameters:
   n_estimators: 2590
@@ -36,4 +36,11 @@ lag_target:
 
 datetime_column_name: 'reading_datetime'
 
-velocity_column_name: ""
+velocity_column_name: "VEL"
+
+bucket_name: ""
+
+blob_directory: ""
+
+version: 1.0.0
+

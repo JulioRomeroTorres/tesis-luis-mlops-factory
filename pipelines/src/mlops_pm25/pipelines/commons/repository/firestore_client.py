@@ -1,11 +1,10 @@
-from datetime import timedelta
 from google.cloud import firestore
 from typing import List, Any, Dict, Optional
 from mlops_pm25.pipelines.commons.domain.constants import DEFAULT_EXPIRATION_TIME
 
 class FireStoreClient:
-    def __init__(self, collection_name: Optional[str] = None):
-        self.db_client = firestore.Client()
+    def __init__(self, db_name: str, collection_name: Optional[str] = None):
+        self.db_client = firestore.Client(database=db_name)
         self.collection_name = collection_name
         pass
 

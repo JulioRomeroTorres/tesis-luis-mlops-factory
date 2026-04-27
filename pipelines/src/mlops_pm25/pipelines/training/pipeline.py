@@ -18,7 +18,9 @@ def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([
         node(
             func= get_meteorological_features,
-            inputs= ["params:feature_table_name", "params:features_names",
+            inputs= [
+                    "params:db_name",
+                    "params:feature_table_name", "params:features_names",
                      "params:start_period",
                      "params:end_period"],
             outputs="feature_data",
@@ -26,7 +28,9 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
         node(
             func= get_meteorological_features,
-            inputs= ["params:target_table_name", "params:target_names",
+            inputs= [
+                    "params:db_name",
+                    "params:target_table_name", "params:target_names",
                      "params:start_period",
                      "params:end_period"],
             outputs="target_data",
@@ -94,7 +98,8 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
         node(
             func= save_artifacts,
-            inputs= ["model", "rmse_scores", "mae_scores", "r2_scores", "feature_importances"],
+            inputs= [ "params:bucket_name", "params:blob_directory", "params: version",
+                "model", "rmse_scores", "mae_scores", "r2_scores", "feature_importances"],
             outputs=None,
             name="Save_Artifacts"
         ),

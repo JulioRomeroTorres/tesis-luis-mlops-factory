@@ -10,7 +10,8 @@ from .nodes import (
     create_lag_meteorological_features,
     create_rolling_meteorological_features,
     create_cinematic_feautes,
-    training, save_artifacts, create_label_station_feature
+    training, save_artifacts, create_label_station_feature,
+    convert_type_columns
 )
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -30,12 +31,13 @@ def create_pipeline(**kwargs) -> Pipeline:
             func= get_meteorological_features,
             inputs= [
                     "params:db_name",
-                    "params:target_table_name", "params:station_target_names",
+                    "params:target_table_name", "params:station_targets_names",
                      "params:start_period",
                      "params:end_period"],
             outputs="target_data",
             name="Get_Targe_Data"
         ),
+        
         node(
             func= merge_information,
             inputs= ["feature_data", "target_data", "params:merge_columns",],
@@ -44,9 +46,16 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
 
         node(
+            func= convert_type_columns,
+            inputs= ["merged_data"],
+            outputs="converted_type_df",
+            name="ConvertedType"
+        ),
+
+        node(
             func= create_cyclic_meteorological_features,
-            inputs= ["merged_data", "params:datetime_column_name"],
-            outputs="cyclic_meteorological_data",
+            inputs= ["converted_type_df", "params:datetime_column_name"],
+            outputs=["cyclic_meteorological_data", "cyclic_features"],
             name="Get_Cyclic_Data"
         ),
 
@@ -60,7 +69,7 @@ def create_pipeline(**kwargs) -> Pipeline:
 
         node(
             func= create_lag_meteorological_features,
-            inputs= ["lag_meteorological_feature_data", "params:target_names",
+            inputs= ["lag_meteorological_feature_data", "params:targets_names",
                      "params:lag_target"],
             outputs="lag_meteorological_target_data",
             name="Get_Lag_Meteorological_Target_Data"
@@ -76,7 +85,7 @@ def create_pipeline(**kwargs) -> Pipeline:
 
         node(
             func= create_rolling_meteorological_features,
-            inputs= ["lag_meteorological_target_data", "params:target_names",
+            inputs= ["rolling_meteorological_feature_data", "params:targets_names",
                      "params:windows_rolling"],
             outputs="rolling_meteorological_target_data",
             name="Get_Rolling_Meteorological_Target_Data"
@@ -91,21 +100,21 @@ def create_pipeline(**kwargs) -> Pipeline:
 
         node(
             func= create_label_station_feature,
-            inputs= ["cinematic_data", "params:velocity_column_name"],
-            outputs="label_station_id_feature",
-            name="Get_Cinematic_Data"
+            inputs= ["cinematic_data"],
+            outputs="label_station_id_df",
+            name="Get_Label_Sttion_Data"
         ),
 
         node(
             func= training,
-            inputs= ["label_station_id_feature", "params:target_names", "params:hyperparameters"],
+            inputs= ["label_station_id_df", "params:targets_names", "params:hyperparameters"],
             outputs=["model", "rmse_scores", "mae_scores", "r2_scores", "feature_importances"],
             name="Training_model"
 
         ),
         node(
             func= save_artifacts,
-            inputs= [ "params:bucket_name", "params:blob_directory", "params: version",
+            inputs= [ "params:bucket_name", "params:blob_directory", "params:version",
                 "model", "rmse_scores", "mae_scores", "r2_scores", "feature_importances"],
             outputs=None,
             name="Save_Artifacts"

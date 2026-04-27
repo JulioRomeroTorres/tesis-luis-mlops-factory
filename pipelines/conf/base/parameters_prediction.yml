@@ -3,3 +3,4 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.15/configuration/parameters.html
+prediction_period: "10/04/2026"

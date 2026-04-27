@@ -37,8 +37,9 @@ def get_meteorological_features(
         ],
         projections=[*features_names, 'READING_DATETIME']
         )
-    
-    return pd.DataFrame(elements)
+    df = pd.DataFrame(elements)
+
+    return df.dropna()
 
 def merge_information(
     first_df: pd.DataFrame,
@@ -53,6 +54,10 @@ def merge_information(
         how='inner'
     )
 
+def convert_type_columns(meteorological_df: pd.DataFrame):
+    meteorological_df['READING_DATETIME'] = pd.to_datetime(meteorological_df['READING_DATETIME'], format='%d/%m/%Y%H:%M:')
+    return meteorological_df
+
 def create_cyclic_meteorological_features(meteorological_df: pd.DataFrame, datetime_column_name: str):
     merged_df, created_temporal_feature = create_temporal_features(meteorological_df, datetime_column_name)
     
@@ -62,6 +67,7 @@ def create_cyclic_meteorological_features(meteorological_df: pd.DataFrame, datet
             print(f"Creando variables cíclica para {filtered_colum[0]} con el periodo de {MAPPER_CYCLIC_VALUE[mapper_cyclic_key]}")
             merged_df = create_cyclic_features(merged_df, filtered_colum[0], MAPPER_CYCLIC_VALUE[mapper_cyclic_key])
 
+    print(create_cyclic_meteorological_features, merged_df)
     return merged_df, created_temporal_feature
 
 def create_lag_meteorological_features(
@@ -72,6 +78,7 @@ def create_lag_meteorological_features(
 
     for col in features:
         meteorological_df = create_lag_features(meteorological_df, col, lag_values)
+    print("create_lag_meteorological_features", meteorological_df)
     return meteorological_df
 
 def create_rolling_meteorological_features(
@@ -81,6 +88,8 @@ def create_rolling_meteorological_features(
 ):
     for col in features:
         meteorological_df = create_rolling_features(meteorological_df, col, windows_rolling)
+
+    print("create_rolling_meteorological_features", meteorological_df)
 
     return meteorological_df
 
@@ -92,12 +101,16 @@ def create_cinematic_feautes(
     meteorological_df['VELO_SQ'] = meteorological_df[velocity_column_name]**2
     meteorological_df['VELO_INV'] = 1 / (meteorological_df[velocity_column_name] + 1e-6)
 
+    print("create_cinematic_feautes", meteorological_df)
+
     return meteorological_df, new_features
 
 def create_label_station_feature(
     meteorological_df: pd.DataFrame,
-):
-    return pd.get_dummies(meteorological_df, columns=['STATION_ID'], prefix='LABEL_STATION_ID')
+):  
+    dummies = pd.get_dummies(meteorological_df, columns=['STATION_ID'], prefix='LABEL_STATION_ID')
+    print("el dummy",dummies)
+    return dummies
 
 def training(
     meteorological_df: pd.DataFrame,
@@ -108,14 +121,28 @@ def training(
     n_splits: int = 10,
     number_relevant_features: int = 20
 ):
+    print("Current Dataframe",meteorological_df.head())
+
+    nulos_por_columna = meteorological_df.isnull().sum()
+    print("\n📊 Cantidad de nulos por columna:")
+    print(nulos_por_columna[nulos_por_columna > 0].sort_values(ascending=False))
+
+    print("\n📊 Porcentaje de nulos por columna:")
+    porcentaje_nulos = (meteorological_df.isnull().sum() / len(meteorological_df)) * 100
+    print(porcentaje_nulos[porcentaje_nulos > 0].sort_values(ascending=False))
+
     meteorological_df = meteorological_df.dropna()
     hyperparameters = XgboostHyperParameters(**hyperparameters)
+
+    print("Current Dataframe",meteorological_df.head())
 
     if features_columns is None:
         features_columns = [col for col in meteorological_df.columns if ( col not in target_columns) and not ( col.startswith('READING_DATETIME') or col.startswith('READING_DATETIME_') or col.startswith('STATION_ID'))  ]
 
     X = meteorological_df[features_columns]
+    print("X", X, target_columns)
     y = meteorological_df[target_columns]
+    print("y", y)
 
     tscv = TimeSeriesSplit(n_splits=n_splits)
 

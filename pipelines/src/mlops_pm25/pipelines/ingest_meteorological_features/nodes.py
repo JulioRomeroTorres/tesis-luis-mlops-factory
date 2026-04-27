@@ -22,6 +22,7 @@ def get_meteorological_variables_data(
         all_predicted_data['STATION_ID'] = [station_id]*len(variable_values)
 
     all_predicted_data['READING_DATETIME'] = all_predicted_data[f'READING_DATETIME_{var_names[0]}']
+    print("Hey Data", all_predicted_data)
     df = pd.DataFrame(all_predicted_data)
 
     return df[['READING_DATETIME', *var_names, 'STATION_ID']]
@@ -39,6 +40,7 @@ def get_meteorological_data_by_station(
         station_meteorological_df = get_meteorological_variables_data(station_id, var_names, endpoint, start_period, end_period)
 
         if not station_meteorological_df.empty:
+            print(station_meteorological_df.head())
             lista_dfs.append(station_meteorological_df)
 
     meteorological_df = pd.concat(lista_dfs, ignore_index=True)

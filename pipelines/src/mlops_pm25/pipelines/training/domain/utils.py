@@ -21,11 +21,13 @@ def create_cyclic_features(df: pd.DataFrame, col: str, period: int) -> pd.DataFr
 
 def create_lag_features(df: pd.DataFrame, column: str, lags: int)  -> pd.DataFrame:
     for lag in lags:
-        df[f'{column}_lag_{lag}'] = df[column].shift(lag)
+        print("column", column, lag)
+        print("joo")
+        df[f'{column}_lag_{lag}'] = df[column].shift(int(lag))
     return df
 
 def create_rolling_features(df: pd.DataFrame, column: str, windows: int) -> pd.DataFrame:
     for window in windows:
-        df[f'{column}_rolling_mean_{window}'] = df[column].rolling(window=window).mean()
-        df[f'{column}_rolling_std_{window}'] = df[column].rolling(window=window).std()
+        df[f'{column}_rolling_mean_{window}'] = df[column].rolling(window=int(window)).mean()
+        df[f'{column}_rolling_std_{window}'] = df[column].rolling(window=int(window)).std()
     return df

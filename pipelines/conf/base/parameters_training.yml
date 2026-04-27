@@ -3,22 +3,22 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.15/configuration/parameters.html
-start_period: "01/10/2025"
-end_period: "10/10/2025"
+start_period: "01/03/2025"
+end_period: "15/04/2026"
 
 feature_table_name: "senamhi-information"
 target_table_name: "pm25-inference"
 
 hyperparameters:
   n_estimators: 2590
-  learning_rate: 0.035648277949081186,
-  max_depth: 9,
-  subsample: 0.9733121035675474,
-  colsample_bytree: 0.8497416192535173,
-  random_state: 39,
-  n_jobs: -1,
-  gamma: 0.295633685837714,
-  reg_alpha: 0.4368808744336672,
+  learning_rate: 0.035648277949081186
+  max_depth: 9
+  subsample: 0.9733121035675474
+  colsample_bytree: 0.8497416192535173
+  random_state: 39
+  n_jobs: -1
+  gamma: 0.295633685837714
+  reg_alpha: 0.4368808744336672
   reg_lambda: 2.182549739351831
 
 windows_rolling: 
@@ -41,9 +41,9 @@ merge_columns:
 
 velocity_column_name: "VELO"
 
-bucket_name: ""
+bucket_name: "model-artifacts-mlops"
 
-blob_directory: ""
+blob_directory: "artifacts"
 
-version: 1.0.0
+version: 1_0_0
 

@@ -7,12 +7,15 @@ senamhi_enpoints:
   features: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
   target: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora.php"
 
-senamhi_enpoint: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
+senamhi_enpoint_v2: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
+senamhi_enpoint: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora.php"
+
 
 db_name: "meteorological-data"
-table_name: "senamhi-information" #pm25-inference
+table_name_mock: "senamhi-information"
+table_name: "pm25-inference" #pm25-inference
 
-features_names:
+features_names_mock:
   - 'VELO'
   - 'HUME'
   - 'TEMP'
@@ -23,11 +26,14 @@ station_features_names:
   - 'HUME'
   - 'TEMP'
 
-targets_names:
+features_names:
   - N_PM25
 
 station_targets_names:
   - 'STATION_ID'
+  - N_PM25
+
+targets_names:
   - N_PM25
 
 stations_ids: 

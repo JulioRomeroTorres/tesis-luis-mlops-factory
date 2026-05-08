@@ -1,0 +1,20 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build', 
+    '-t',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--cache-from',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    'pipelines/.'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
+
+images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
+options:
+  logging: CLOUD_LOGGING_ONLY

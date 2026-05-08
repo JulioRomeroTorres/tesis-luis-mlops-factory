@@ -1,0 +1,38 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build', 
+    '-t',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest',
+    '--cache-from',
+    '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest',
+    '/inference/.'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest']
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - '${_CLOUD_RUN_SERVICE_NAME}'
+  - '--image'
+  - '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest'
+  - '--region'
+  - '${_CLOUD_RUN_REGION}'
+  - '--platform'
+  - 'managed'
+  - '--allow-unauthenticated'
+  - '--set-env-vars'
+  - '^#^ENV=${_DAG_ENV}#DATABASE_URL=${_DATABASE_URL}#API_KEY=${_API_KEY}#SECRET_KEY=${_SECRET_KEY}'
+
+
+images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest']
+
+options:
+  logging: CLOUD_LOGGING_ONLY

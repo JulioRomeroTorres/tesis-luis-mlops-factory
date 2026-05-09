@@ -60,3 +60,6 @@ telemetry_output/*
 
 utility_tests/*
 telemetry_output
+
+*.vscode
+gcp-key.json

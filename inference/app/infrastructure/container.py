@@ -6,12 +6,11 @@ from app.application.use_cases.handle_inference import (
     HandleInferenceUseCase
 )
 
-from app.infrastructure.repository.mongo_db import FirestoreRepository
-from app.infrastructure.repository.storage_account import StorageAccountRepository
+from app.infrastructure.repository.firestore import FirestoreDbRepository
+from app.application.services.inference_manager import InferenceManager
 
 
-from pymongo import AsyncMongoClient
-from app.infrastructure.managers.http_manager import HttpRepositoryManager
+from google.cloud.firestore_v1 import AsyncClient
 
 class DependencyContainer:
     def __init__(self):
@@ -29,9 +28,8 @@ class DependencyContainer:
 
         settings = get_settings()
 
-        self._factories["db_repository"] = lambda: FirestoreRepository(self._get_db_client(), settings.mongo_db_name)
-        self._factories["storage_repository"] = lambda: StorageAccountRepository(self._get_storage_client(), settings.storage_account_name)
-
+        self._factories["db_repository"] = lambda: FirestoreDbRepository(self._get_db_client())
+        
 
         self._factories["inference_manager"] = lambda: InferenceManager(
             self.get('db_repository'),
@@ -58,10 +56,10 @@ class DependencyContainer:
         self._instances.clear()
         self._initialized = False
     
-    def _get_db_client(self) -> AsyncMongoClient:
+    def _get_db_client(self) -> AsyncClient:
         if self._db_client is None:
             settings = get_settings()
-            self._db_client = AsyncMongoClient(settings.mongo_db_connection_string)
+            self._db_client = AsyncClient(database=settings.firestore_db_name)
         return self._db_client
 
     async def close_all(self):
@@ -69,8 +67,6 @@ class DependencyContainer:
         print("Closing all connection...")
         if self._db_client:
             await self._db_client.close()
-
-        await HttpRepositoryManager.close_all_sessions()
 
         self.clear()
         print("All connection are closed")

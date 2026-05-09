@@ -9,9 +9,9 @@ class HandleInferenceUseCase:
         self.inference_manager = inference_manager
         pass
 
-    async def get_inference(self, selected_period: str) -> Pm25Inference:
+    async def get_inference(self, selected_period: str, station_id: str) -> Pm25Inference:
 
-        created_register = await self.inference_manager.get_inference(selected_period)
+        created_register = await self.inference_manager.get_inference(selected_period, station_id)
         return Pm25Inference(**{
             "value": created_register.get("N_PM25"),
             "reading_datetime": created_register.get("READING_DATETIME"),

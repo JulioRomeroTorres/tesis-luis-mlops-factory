@@ -31,11 +31,7 @@ jobs:
         echo "Registry: ${{ vars.CONT_REGISTRY_NAME }}"
         echo "Repository: ${{ vars.CONT_REPOSITORY_NAME }}"
         echo "Image name: ${{ vars.CONT_IMAGE_PROCESS_NAME }}"
-        echo "Dag Schedule Interval: ${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
-        echo "Image name: ${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }}"
-        echo "Dag Schedule Interval: ${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
-        echo "Dag bucket Path: ${{ vars.DAG_BUCKET_PATH }}"
-        echo "Dag Env: ${{ vars.DAG_ENV }}"
+
       
     - name: Google Auth
       uses: 'google-github-actions/auth@v1'

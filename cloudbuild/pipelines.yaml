@@ -15,6 +15,96 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'create', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
+    '--cpu', '${_JOB_CPU}',        # Ej: 1
+    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
+    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'update', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',
+    '--cpu', '${_JOB_CPU}',
+    '--max-retries', '${_MAX_RETRIES}',
+    '--task-timeout', '${_TASK_TIMEOUT}',
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'create', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
+    '--cpu', '${_JOB_CPU}',        # Ej: 1
+    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
+    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'update', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',
+    '--cpu', '${_JOB_CPU}',
+    '--max-retries', '${_MAX_RETRIES}',
+    '--task-timeout', '${_TASK_TIMEOUT}',
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'create', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
+    '--cpu', '${_JOB_CPU}',        # Ej: 1
+    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
+    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'gcloud'
+  args: [
+    'run', 'jobs', 'update', 
+    '${_CLOUD_RUN_JOB_NAME}',
+    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
+    '--region', '${_REGION}',
+    '--project', '${_PROJECT_ID}',
+    '--memory', '${_JOB_MEMORY}',
+    '--cpu', '${_JOB_CPU}',
+    '--max-retries', '${_MAX_RETRIES}',
+    '--task-timeout', '${_TASK_TIMEOUT}',
+    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
+  ]
+
 images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 options:
   logging: CLOUD_LOGGING_ONLY

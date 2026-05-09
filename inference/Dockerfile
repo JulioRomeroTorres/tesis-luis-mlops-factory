@@ -15,7 +15,6 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml ./
-COPY lib ./lib
 COPY app ./app
 
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -44,7 +43,6 @@ RUN mkdir -p /app/telemetry_output && \
 
 COPY --from=builder /opt/venv /opt/venv
 COPY app ./app
-COPY lib ./lib
 
 RUN chown -R appuser:appuser /app && \
     chmod -R 755 /app

@@ -9,102 +9,180 @@ steps:
     '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
     '--cache-from',
     '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '/pipelines/.'
+    'pipelines/.'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'create', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
-    '--cpu', '${_JOB_CPU}',        # Ej: 1
-    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
-    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
 
 - name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'update', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',
-    '--cpu', '${_JOB_CPU}',
-    '--max-retries', '${_MAX_RETRIES}',
-    '--task-timeout', '${_TASK_TIMEOUT}',
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "=== Configurando Job 1: Pipeline Principal ==="
+      
+      # Crear o actualizar job
+      if gcloud run jobs describe ${_JOB1_NAME} --region=${_REGION} --project=${_PROJECT_ID} 2>/dev/null; then
+        echo "Actualizando job existente: ${_JOB1_NAME}"
+        gcloud run jobs update ${_JOB1_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      else
+        echo "Creando nuevo job: ${_JOB1_NAME}"
+        gcloud run jobs create ${_JOB1_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      fi
+      
+      # Configurar scheduler para Job 1
+      if gcloud scheduler jobs describe ${_JOB1_NAME}-trigger --location=${_REGION} 2>/dev/null; then
+        gcloud scheduler jobs update http ${_JOB1_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB1_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB1_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      else
+        gcloud scheduler jobs create http ${_JOB1_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB1_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB1_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      fi
 
+# Job 2: Pipeline secundario (cada 30 minutos)
 - name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'create', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
-    '--cpu', '${_JOB_CPU}',        # Ej: 1
-    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
-    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "=== Configurando Job 2: Pipeline Secundario ==="
+      
+      if gcloud run jobs describe ${_JOB2_NAME} --region=${_REGION} --project=${_PROJECT_ID} 2>/dev/null; then
+        echo "Actualizando job existente: ${_JOB2_NAME}"
+        gcloud run jobs update ${_JOB2_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      else
+        echo "Creando nuevo job: ${_JOB2_NAME}"
+        gcloud run jobs create ${_JOB2_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      fi
+      
+      # Configurar scheduler para Job 2
+      if gcloud scheduler jobs describe ${_JOB2_NAME}-trigger --location=${_REGION} 2>/dev/null; then
+        gcloud scheduler jobs update http ${_JOB2_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB2_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB2_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      else
+        gcloud scheduler jobs create http ${_JOB2_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB2_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB2_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      fi
 
+# Job 3: Pipeline de limpieza/backup (cada día a las 2 AM)
 - name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'update', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',
-    '--cpu', '${_JOB_CPU}',
-    '--max-retries', '${_MAX_RETRIES}',
-    '--task-timeout', '${_TASK_TIMEOUT}',
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "=== Configurando Job 3: Pipeline de Limpieza ==="
+      
+      if gcloud run jobs describe ${_JOB3_NAME} --region=${_REGION} --project=${_PROJECT_ID} 2>/dev/null; then
+        echo "Actualizando job existente: ${_JOB3_NAME}"
+        gcloud run jobs update ${_JOB3_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      else
+        echo "Creando nuevo job: ${_JOB3_NAME}"
+        gcloud run jobs create ${_JOB3_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS}" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+      fi
+      
+      # Configurar scheduler para Job 3
+      if gcloud scheduler jobs describe ${_JOB3_NAME}-trigger --location=${_REGION} 2>/dev/null; then
+        gcloud scheduler jobs update http ${_JOB3_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB3_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB3_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      else
+        gcloud scheduler jobs create http ${_JOB3_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB3_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB3_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      fi
 
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'create', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',  # Ej: 2Gi
-    '--cpu', '${_JOB_CPU}',        # Ej: 1
-    '--max-retries', '${_MAX_RETRIES}',  # Ej: 0
-    '--task-timeout', '${_TASK_TIMEOUT}',  # Ej: 3600s
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
-
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
-  entrypoint: 'gcloud'
-  args: [
-    'run', 'jobs', 'update', 
-    '${_CLOUD_RUN_JOB_NAME}',
-    '--image', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest',
-    '--region', '${_REGION}',
-    '--project', '${_PROJECT_ID}',
-    '--memory', '${_JOB_MEMORY}',
-    '--cpu', '${_JOB_CPU}',
-    '--max-retries', '${_MAX_RETRIES}',
-    '--task-timeout', '${_TASK_TIMEOUT}',
-    '--set-env-vars', 'DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}'
-  ]
 
 images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 options:
   logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _REGION: us-east4
+  _JOB_MEMORY: 2Gi
+  _JOB_CPU: 1
+  _MAX_RETRIES: 0
+  _TASK_TIMEOUT: 600s

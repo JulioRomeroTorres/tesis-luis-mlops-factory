@@ -3,17 +3,22 @@ name: 1. Deploy Kedro Pipeline
 on:
   workflow_dispatch:
     inputs:
-      _ENVIRONMENT:
-        description: 'Environment name'
+      _ARTIFACT:
+        description: 'Artifact'
         required: true
-        default: "dev"
+        default: "pipelines"
+        type: choice
+        options:
+          - pipelines
+          - web-ui
+          - api
 jobs:
   deploy:
-    name: Deploy to ${{ github.event.inputs._ENVIRONMENT }} environment
+    name: Deploy to ${{ github.event.inputs._ARTIFACT }} environment
     runs-on: ubuntu-latest
     
     environment:
-      name: ${{ github.event.inputs._ENVIRONMENT }}
+      name: ${{ github.event.inputs._ARTIFACT }}
 
     steps:
     - name: Checkout code
@@ -21,7 +26,7 @@ jobs:
       
     - name: Verify deployment information
       run: |
-        echo "Deploying to DEV ${{ github.event.inputs._ENVIRONMENT }}"
+        echo "Deploying to DEV ${{ github.event.inputs._ARTIFACT }}"
         echo "Project ID: ${{ vars.PROJECT_ID }}"
         echo "Registry: ${{ vars.CONT_REGISTRY_NAME }}"
         echo "Repository: ${{ vars.CONT_REPOSITORY_NAME }}"
@@ -40,7 +45,9 @@ jobs:
     - name: Set up Cloud SDK
       uses: 'google-github-actions/setup-gcloud@v1'
 
-    - name: Trigger Cloud Build
+
+    - name: Deploy Pipelines
+      if: github.event.inputs._ARTIFACT == 'pipelines'
       run: |
         SCHEDULE_PROCESS_INTERVAL="${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
         SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
@@ -48,3 +55,24 @@ jobs:
         gcloud builds submit --project=${{ vars.PROJECT_ID }} \
           --substitutions=_CONT_IMAGE_NAME=${{ vars.CONT_IMAGE_NAME }},_CONT_IMAGE_PROCESS_NAME=${{ vars.CONT_IMAGE_PROCESS_NAME }},_CONT_IMAGE_SUMMARY_PROCESS_NAME=${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_DAG_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_PROCESS_INTERVAL",_DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_SUMMARY_PROCESS_INTERVAL",_DAG_BUCKET_PATH=${{ vars.DAG_BUCKET_PATH }},_DAG_ENV=${{ vars.DAG_ENV }} \
           --config=cloudbuild/pipelines.yaml
+      
+    - name: Deploy Web UI
+      if: github.event.inputs._ARTIFACT == 'web-ui'
+      run: |
+        SCHEDULE_PROCESS_INTERVAL="${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
+        SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
+        
+        gcloud builds submit --project=${{ vars.PROJECT_ID }} \
+          --substitutions=_CONT_IMAGE_NAME=${{ vars.CONT_IMAGE_NAME }},_CONT_IMAGE_PROCESS_NAME=${{ vars.CONT_IMAGE_PROCESS_NAME }},_CONT_IMAGE_SUMMARY_PROCESS_NAME=${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_DAG_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_PROCESS_INTERVAL",_DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_SUMMARY_PROCESS_INTERVAL",_DAG_BUCKET_PATH=${{ vars.DAG_BUCKET_PATH }},_DAG_ENV=${{ vars.DAG_ENV }} \
+          --config=cloudbuild/web-ui.yaml
+      
+    - name: Deploy API
+      if: github.event.inputs._ARTIFACT == 'api'
+      run: |
+        SCHEDULE_PROCESS_INTERVAL="${{ vars.DAG_PROCESS_SCHEDULE_INTERVAL }}"
+        SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
+        
+        gcloud builds submit --project=${{ vars.PROJECT_ID }} \
+          --substitutions=_CONT_IMAGE_NAME=${{ vars.CONT_IMAGE_NAME }},_CONT_IMAGE_PROCESS_NAME=${{ vars.CONT_IMAGE_PROCESS_NAME }},_CONT_IMAGE_SUMMARY_PROCESS_NAME=${{ vars.CONT_IMAGE_SUMMARY_PROCESS_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_DAG_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_PROCESS_INTERVAL",_DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL="$SCHEDULE_SUMMARY_PROCESS_INTERVAL",_DAG_BUCKET_PATH=${{ vars.DAG_BUCKET_PATH }},_DAG_ENV=${{ vars.DAG_ENV }} \
+          --config=cloudbuild/api.yaml
+      

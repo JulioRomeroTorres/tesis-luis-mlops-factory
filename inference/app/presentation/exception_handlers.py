@@ -6,8 +6,6 @@ from app.presentation.api.error_mapper import ExceptionMapper
 from fastapi import status
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
-from lib.maf_telemetry.guardrails.middleware import SecurityViolation
-from agent_framework.openai import OpenAIContentFilterException
 from fastapi.logger import logger
 
 async def domain_exception_handler(request, exc: DomainException):
@@ -18,24 +16,6 @@ async def domain_exception_handler(request, exc: DomainException):
 async def api_exception_handler(request, exc: HttpApiException):
     logger.error(f"Api Error: {exc}") 
     return JSONResponse(exc.format_json(), status_code=exc.status_code)
-
-async def security_exception_handler(request, exc: SecurityViolation):
-    logger.error(f"Guardrails Error: {exc}")
-    details_analysis = {"mode": exc.mode}
-    details_analysis = details_analysis if exc.analysis_result is None else {"analysis":exc.analysis_result,**details_analysis}
-
-    return JSONResponse({
-        "message": exc.message,
-        "internal_code": "GUARDRAIL_ERROR",
-        "details": json.dumps(details_analysis)
-    }, status_code=status.HTTP_422_UNPROCESSABLE_CONTENT)
-
-async def security_model_exception_handler(request, exc: OpenAIContentFilterException):
-    return JSONResponse({
-        "message": "El input no cumple la politica del guadrail del modelo de OpenAi",
-        "internal_code": "GUARDRAIL_ERROR",
-        "details": str(exc)
-    }, status_code=status.HTTP_422_UNPROCESSABLE_CONTENT)
 
 async def generic_exception_handler(request, exc: Exception):
     logger.error(f"Generic Error: {exc}") 

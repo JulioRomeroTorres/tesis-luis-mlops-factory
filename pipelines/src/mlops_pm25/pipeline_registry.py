@@ -7,6 +7,7 @@ from kedro.pipeline import Pipeline
 from .pipelines.ingest_meteorological_features.pipeline import create_pipeline as ingest_meteorological_features
 from .pipelines.training.pipeline import create_pipeline as training
 from .pipelines.prediction.pipeline import create_pipeline as prediction
+from .pipelines.dummy_execution.pipeline import create_pipeline as dummy_execution
 
 def register_pipelines() -> dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -19,4 +20,5 @@ def register_pipelines() -> dict[str, Pipeline]:
     pipelines["ingest_meteorological_features"] = ingest_meteorological_features()
     pipelines["trainig"] = training()
     pipelines["prediction"] = prediction()
+    pipelines["dummy_prediction"] = dummy_execution()
     return pipelines

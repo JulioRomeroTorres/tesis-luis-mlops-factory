@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 from decimal import Decimal, ROUND_HALF_UP
 from typing import List, Dict, Any, Optional
 from datetime import datetime
@@ -122,3 +123,6 @@ def scale_number(value: float, scale: ScaleNumber, precision: float = 2) -> str:
     scaled_value = round(scaled_value, precision)
 
     return f"{scaled_value} {scale}"
+
+def get_current_datetime() -> datetime:
+    return datetime.now()

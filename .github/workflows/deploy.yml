@@ -1,4 +1,4 @@
-name: 1. Deploy Kedro Pipeline 
+name: 1. Deploy Artifacts 
 
 on:
   workflow_dispatch:

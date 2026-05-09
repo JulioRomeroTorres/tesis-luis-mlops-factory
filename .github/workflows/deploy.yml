@@ -42,6 +42,23 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v1'
 
 
+    - name: Create GCP Service Account JSON file
+      run: |
+        mkdir -p pipelines/secrets
+        mkdir -p web-ui/secrets
+        mkdir -p api/secrets
+        
+        # Guardar el secreto como archivo JSON
+        echo '${{ secrets.GCP_SA_KEY }}' > pipelines/secrets/gcp-sa-key.json
+        echo '${{ secrets.GCP_SA_KEY }}' > web-ui/secrets/gcp-sa-key.json
+        echo '${{ secrets.GCP_SA_KEY }}' > api/secrets/gcp-sa-key.json
+        
+        # Verificar que se creó correctamente
+        echo "✅ GCP Service Account JSON created at pipelines/secrets/gcp-sa-key.json"
+        ls -la web-ui/secrets/
+        ls -la pipelines/secrets/
+        ls -la api/secrets/
+
     - name: Deploy Pipelines
       if: github.event.inputs._ARTIFACT == 'pipelines'
       run: |

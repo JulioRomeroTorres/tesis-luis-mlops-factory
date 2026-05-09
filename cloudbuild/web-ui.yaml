@@ -9,7 +9,7 @@ steps:
     '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest',
     '--cache-from',
     '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest',
-    '/inference/.'
+    '/web-ui/.'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'

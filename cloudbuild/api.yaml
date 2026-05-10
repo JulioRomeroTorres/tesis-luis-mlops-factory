@@ -7,9 +7,10 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p inference/secrets
-    echo '${_GCP_SA_KEY}' > inference/secrets/gcp-sa-key.json
-    cat inference/gcp-sa-key.json
+    echo '${_GCP_SA_KEY_BASE64}' | base64 -d > inference/gcp-sa-key.json
+    # Verificar que el JSON es válido
+    cat inference/secrets/gcp-sa-key.json | jq .
+    echo "✅ Archivo creado correctamente"
 
 - name: 'gcr.io/cloud-builders/docker'
   args: [

@@ -16,7 +16,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml ./
 COPY app ./app
-COPY secrets/gcp-sa-key.json ./
+COPY gcp-sa-key.json ./
 
 RUN ls -a
 

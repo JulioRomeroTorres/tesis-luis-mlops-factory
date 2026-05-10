@@ -86,6 +86,6 @@ jobs:
         SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
         
         gcloud builds submit --project=${{ vars.PROJECT_ID }} \
-          --substitutions=_CONT_API_IMAGE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CLOUD_RUN_SERVICE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_FIRESTORE_DB_NAME=${{ vars.FIRESTORE_DB_NAME }} \
+          --substitutions=_CONT_API_IMAGE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CLOUD_RUN_SERVICE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_FIRESTORE_DB_NAME=${{ vars.FIRESTORE_DB_NAME }},_GCP_SA_KEY="${{ secrets.GCP_SA_KEY }}" \
           --config=cloudbuild/api.yaml
       

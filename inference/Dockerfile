@@ -16,6 +16,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml ./
 COPY app ./app
+COPY gcp-sa-key.json ./
+
+RUN ls -a
 
 RUN pip install -U pip \
     && pip install .

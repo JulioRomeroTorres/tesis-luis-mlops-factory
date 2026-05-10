@@ -2,6 +2,15 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
 
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p inference/secrets
+    echo '${_GCP_SA_KEY}' > inference/secrets/gcp-sa-key.json
+    cat inference/gcp-sa-key.json
+
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 

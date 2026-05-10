@@ -43,21 +43,12 @@ jobs:
 
 
     - name: Create GCP Service Account JSON file
+      id: create_secret
       run: |
-        mkdir -p pipelines/secrets
-        mkdir -p web-ui/secrets
-        mkdir -p api/secrets
+        GCP_SA_KEY_BASE64=$(echo '${{ secrets.GCP_SA_KEY }}' | base64 -w 0)
         
-        # Guardar el secreto como archivo JSON
-        echo '${{ secrets.GCP_SA_KEY }}' > pipelines/secrets/gcp-sa-key.json
-        echo '${{ secrets.GCP_SA_KEY }}' > web-ui/secrets/gcp-sa-key.json
-        echo '${{ secrets.GCP_SA_KEY }}' > api/secrets/gcp-sa-key.json
-        
-        # Verificar que se creó correctamente
-        echo "✅ GCP Service Account JSON created at pipelines/secrets/gcp-sa-key.json"
-        ls -la web-ui/secrets/
-        ls -la pipelines/secrets/
-        ls -la api/secrets/
+        # Guardar como output
+        echo "gcp_sa_key_base64=$GCP_SA_KEY_BASE64" >> $GITHUB_OUTPUT
 
     - name: Deploy Pipelines
       if: github.event.inputs._ARTIFACT == 'pipelines'
@@ -86,6 +77,6 @@ jobs:
         SCHEDULE_SUMMARY_PROCESS_INTERVAL="${{ vars.DAG_SUMMARY_PROCESS_SCHEDULE_INTERVAL }}"
         
         gcloud builds submit --project=${{ vars.PROJECT_ID }} \
-          --substitutions=_CONT_API_IMAGE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CLOUD_RUN_SERVICE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_FIRESTORE_DB_NAME=${{ vars.FIRESTORE_DB_NAME }},_GCP_SA_KEY="${{ secrets.GCP_SA_KEY }}" \
+          --substitutions=_CONT_API_IMAGE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_CONT_REPOSITORY_NAME=${{ vars.CONT_REPOSITORY_NAME }},_CONT_REGISTRY_NAME=${{ vars.CONT_REGISTRY_NAME }},_PROJECT_ID=${{ vars.PROJECT_ID }},_CLOUD_RUN_SERVICE_NAME=${{ vars.CONT_IMAGE_API_NAME }},_FIRESTORE_DB_NAME=${{ vars.FIRESTORE_DB_NAME }},_GCP_SA_KEY="${{ steps.create_secret.outputs.gcp_sa_key_base64 }}" \
           --config=cloudbuild/api.yaml
       

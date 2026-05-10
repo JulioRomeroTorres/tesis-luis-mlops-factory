@@ -17,8 +17,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY pyproject.toml ./
 COPY app ./app
 
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -U pip \
+RUN pip install -U pip \
     && pip install .
 
 # -------------------- runtime --------------------

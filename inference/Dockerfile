@@ -16,7 +16,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml ./
 COPY app ./app
-COPY gcp-sa-key.json ./
 
 RUN ls -a
 
@@ -45,6 +44,7 @@ RUN mkdir -p /app/telemetry_output && \
 
 COPY --from=builder /opt/venv /opt/venv
 COPY app ./app
+COPY gcp-sa-key.json ./
 
 RUN chown -R appuser:appuser /app && \
     chmod -R 755 /app

@@ -2,6 +2,16 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
 
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    echo '${_GCP_SA_KEY_BASE64}' | base64 -d > pipelines/gcp-sa-key.json
+    # Verificar que el JSON es válido
+    cat pipelines/gcp-sa-key.json
+    echo "✅ Archivo creado correctamente"
+
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 

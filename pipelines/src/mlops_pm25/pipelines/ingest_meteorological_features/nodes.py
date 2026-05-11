@@ -58,6 +58,7 @@ def get_meteorological_data_by_station(
             if latest_element:
                 print("Latest Element")
                 get_current_hour = get_current_datetime().strftime("%d/%m/%Y%H:00:")
+                print(f"get_current_hour {get_current_hour}")
                 filtered_df = station_meteorological_df[station_meteorological_df['READING_DATETIME'] == get_current_hour]
                 
                 if(len(filtered_df) > 0):

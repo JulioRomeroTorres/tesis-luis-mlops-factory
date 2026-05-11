@@ -10,7 +10,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([
         node(
             func= get_datetime,
-            inputs= None,
+            inputs= ["params:features_names","params:start_period"],
             outputs=None,
             name="Get_Current_Datetime_Node"
         ),

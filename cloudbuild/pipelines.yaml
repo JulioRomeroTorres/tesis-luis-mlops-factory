@@ -239,3 +239,7 @@ substitutions:
   _JOB_CPU: "1"
   _MAX_RETRIES: "0"
   _TASK_TIMEOUT: 600s
+  _JOB1_PARAMS: "start_period=None,end_period=None,table_name=senamhi-information,senamhi_enpoint=https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora_met.php"
+  _JOB2_PARAMS: "start_period=None,end_period=None,table_name=pm25-target,senamhi_enpoint=https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato_hora.php,features_names=N_PM25"
+  _JOB3_PARAMS: "version=2_0_0"
+  _JOB4_PARAMS: "prediction_period=None"

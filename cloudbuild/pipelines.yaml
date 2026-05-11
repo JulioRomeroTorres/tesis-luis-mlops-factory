@@ -16,7 +16,7 @@ steps:
   args: ['push', '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 
 
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -70,7 +70,7 @@ steps:
       fi
 
 # Job 2: Pipeline secundario (cada 30 minutos)
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -123,7 +123,7 @@ steps:
       fi
 
 # Job 3: Pipeline de limpieza/backup (cada día a las 2 AM)
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -176,7 +176,7 @@ steps:
       fi
 
 
-- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -236,6 +236,6 @@ options:
 substitutions:
   _REGION: us-east4
   _JOB_MEMORY: 512Mi
-  _JOB_CPU: 1
-  _MAX_RETRIES: 0
+  _JOB_CPU: "1"
+  _MAX_RETRIES: "0"
   _TASK_TIMEOUT: 600s

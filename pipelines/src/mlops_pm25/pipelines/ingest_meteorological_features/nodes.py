@@ -3,6 +3,7 @@ This is a boilerplate pipeline 'ingest_meteorical_features'
 generated using Kedro 0.19.15
 """
 import pandas as pd
+from datetime import timedelta
 from typing import List, Dict, Any
 from mlops_pm25.pipelines.commons.repository.senamhi_transformer import SenamhiTransformer
 from mlops_pm25.pipelines.commons.repository.firestore_client import FireStoreClient
@@ -30,7 +31,7 @@ def get_meteorological_variables_data(
 
 def normalize_datetime(current_datetime: str):
     if current_datetime == "None":
-        return get_current_datetime().strftime("%d/%m/%Y")
+        return (get_current_datetime()-timedelta(hours=5)).strftime("%d/%m/%Y")
     return current_datetime
 
 def get_meteorological_data_by_station(

@@ -35,8 +35,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       else
         echo "Creando nuevo job: ${_JOB1_NAME}"
         gcloud run jobs create ${_JOB1_NAME} \
@@ -48,8 +48,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB1_PIPELINE_NAME},--params=${_JOB1_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       fi
       
       # Configurar scheduler para Job 1
@@ -88,8 +88,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       else
         echo "Creando nuevo job: ${_JOB2_NAME}"
         gcloud run jobs create ${_JOB2_NAME} \
@@ -101,8 +101,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB2_PIPELINE_NAME},--params=${_JOB2_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       fi
       
       # Configurar scheduler para Job 2
@@ -141,8 +141,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       else
         echo "Creando nuevo job: ${_JOB3_NAME}"
         gcloud run jobs create ${_JOB3_NAME} \
@@ -154,8 +154,8 @@ steps:
           --max-retries=${_MAX_RETRIES} \
           --task-timeout=${_TASK_TIMEOUT} \
           --command="kedro" \
-          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS}" \
-          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,DAG_ENV=${_DAG_ENV},PROJECT_ID=${_PROJECT_ID}"
+          --args="run,--pipeline=${_JOB3_PIPELINE_NAME},--params=${_JOB3_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
       fi
       
       # Configurar scheduler para Job 3
@@ -176,13 +176,66 @@ steps:
       fi
 
 
+- name: 'gcr.io/google.com/cloudsdktools/cloud-sdk:slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "=== Configurando Job 4: Training"
+      
+      if gcloud run jobs describe ${_JOB4_NAME} --region=${_REGION} --project=${_PROJECT_ID} 2>/dev/null; then
+        echo "Actualizando job existente: ${_JOB4_NAME}"
+        gcloud run jobs update ${_JOB4_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB4_PIPELINE_NAME},--params=${_JOB4_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
+      else
+        echo "Creando nuevo job: ${_JOB4_NAME}"
+        gcloud run jobs create ${_JOB4_NAME} \
+          --image=${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest \
+          --region=${_REGION} \
+          --project=${_PROJECT_ID} \
+          --memory=${_JOB_MEMORY} \
+          --cpu=${_JOB_CPU} \
+          --max-retries=${_MAX_RETRIES} \
+          --task-timeout=${_TASK_TIMEOUT} \
+          --command="kedro" \
+          --args="run,--pipeline=${_JOB4_PIPELINE_NAME},--params=${_JOB4_PARAMS},--env=dev" \
+          --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json,KEDRO_ENV=dev,PROJECT_ID=${_PROJECT_ID}"
+      fi
+      
+      # Configurar scheduler para Job 3
+      if gcloud scheduler jobs describe ${_JOB4_NAME}-trigger --location=${_REGION} 2>/dev/null; then
+        gcloud scheduler jobs update http ${_JOB4_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB4_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB4_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      else
+        gcloud scheduler jobs create http ${_JOB4_NAME}-trigger \
+          --location=${_REGION} \
+          --schedule="${_JOB4_CRON}" \
+          --uri="https://${_REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${_PROJECT_ID}/jobs/${_JOB4_NAME}:run" \
+          --http-method=POST \
+          --oauth-service-account-email=${_SA_NAME}
+      fi
+
+
 images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_IMAGE_NAME}:latest']
 options:
   logging: CLOUD_LOGGING_ONLY
 
 substitutions:
   _REGION: us-east4
-  _JOB_MEMORY: 2Gi
+  _JOB_MEMORY: 512Mi
   _JOB_CPU: 1
   _MAX_RETRIES: 0
   _TASK_TIMEOUT: 600s

@@ -36,6 +36,9 @@ def get_meteorological_data_by_station(
     meteorological_df = pd.DataFrame()
     lista_dfs = []
 
+    if isinstance(var_names, str):
+        var_names = var_names.split('__')
+
     for station_id in stations_ids:
         station_meteorological_df = get_meteorological_variables_data(station_id, var_names, endpoint, start_period, end_period)
 

@@ -45,7 +45,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             name="Merged_Data"
         ),
 
-        node(
+        node(#Mover al prediciton
             func= convert_type_columns,
             inputs= ["merged_data"],
             outputs="converted_type_df",

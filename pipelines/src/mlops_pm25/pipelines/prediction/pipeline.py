@@ -125,7 +125,9 @@ def create_pipeline(**kwargs) -> Pipeline:
             func= predict,
             inputs= [
                     "label_station_id_pred_df", "params:targets_names",
-                    "params:bucket_name", "params:blob_directory", "params:version"
+                    "params:bucket_name", "params:blob_directory", "params:version",
+                    "params:start_period",
+                     "params:end_period"
                      ],
             outputs=None,
             name="Predict_PM25"

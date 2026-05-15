@@ -11,6 +11,7 @@ from .utils import (
     create_cyclic_features, create_temporal_features
 ) 
 from .domain.constants import BigQueryInsertionMode, MAPPER_CYCLIC_VALUE
+from mlops_pm25.pipelines.commons.repository.firestore_client import FireStoreClient
 
 def convert_json_to_df(json_entities: List[Dict[str, Any]]) -> pd.DataFrame:
     df_entities = pd.DataFrame(json_entities)
@@ -89,3 +90,22 @@ def create_label_station_feature(
     print("el dummy",dummies)
     return dummies
 
+def get_meteorological_features(
+    db_name: str, 
+    table_name: str,
+    features_names: List[str],
+    start_period: str,
+    end_period: str
+) -> pd.DataFrame:
+    
+    db_client = FireStoreClient(db_name, table_name)
+    elements = db_client.get_elements_by_filters(
+        filters=[
+            ('READING_DATETIME', '>=', start_period),
+            ('READING_DATETIME', '<=', end_period),
+        ],
+        projections=[*features_names, 'READING_DATETIME']
+        )
+    df = pd.DataFrame(elements)
+
+    return df.dropna()

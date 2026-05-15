@@ -6,22 +6,24 @@ import pandas as pd
 from typing import List
 from datetime import timedelta
 from kedro_datasets.pickle import PickleDataset
-from mlops_pm25.pipelines.commons.repository.firestore_client import FireStoreClient
 from mlops_pm25.pipelines.commons.utils import is_str_none, get_current_datetime
+from mlops_pm25.pipelines.commons.nodes import get_meteorological_features
 
 def get_last_evaluation_date(start_period: str, end_period: str):
     return is_str_none(start_period) and is_str_none(end_period)
 
-def get_features(db_name: str, table_name: str, start_period: str, end_period: str):
-    db_client = FireStoreClient(db_name, table_name)
-    print("New Data", data.head())
-    print("Elements to add", data.shape)
+def get_features(db_name: str, table_name: str, features_names: List[str], start_period: str, end_period: str):
 
-    results = data.to_dict(orient='records')
-    db_client.bulk_insert_elements(results)
-
-def get_pm25(db_name: str, table_name: str, start_period: str, end_period: str):
-    pass
+    end_period = ( ( get_current_datetime()-timedelta(hours=5) ).strftime("%d/%m/%Y%H:00:")) if is_str_none(end_period) else end_period
+    start_period = ( ( get_current_datetime()-timedelta(hours=41) ).strftime("%d/%m/%Y%H:00:"))  if is_str_none(start_period) else start_period
+    
+    return get_meteorological_features(
+        db_name, 
+        table_name,
+        features_names,
+        start_period,
+        end_period
+    )
 
 def create_template_datetime_df(start_period: str, end_period: str, station_ids: List[str]) -> pd.DataFrame:
     lastest_datetime = get_last_evaluation_date(start_period, end_period)

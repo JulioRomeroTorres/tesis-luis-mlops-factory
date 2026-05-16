@@ -109,3 +109,11 @@ def get_meteorological_features(
     df = pd.DataFrame(elements)
 
     return df.dropna()
+
+def ingest_features(db_name: str, table_name: str, data: pd.DataFrame):
+    db_client = FireStoreClient(db_name, table_name)
+    print("New Data", data.head())
+    print("Elements to add", data.shape)
+
+    results = data.to_dict(orient='records')
+    db_client.bulk_insert_elements(results)

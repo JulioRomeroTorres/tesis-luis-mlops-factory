@@ -21,8 +21,7 @@ def create_cyclic_features(df: pd.DataFrame, col: str, period: int) -> pd.DataFr
 
 def create_lag_features(df: pd.DataFrame, column: str, lags: int)  -> pd.DataFrame:
     for lag in lags:
-        print("column", column, lag)
-        print("joo")
+        print(f"column {column} this lag {lag} from {lags}")
         df[f'{column}_lag_{lag}'] = df[column].shift(int(lag))
     return df
 

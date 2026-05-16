@@ -75,7 +75,7 @@ def create_lag_meteorological_features(
         features: List[str],
         lag_values: List[int]
     ):
-
+    print(f"Lag Values ===> {lag_values}")
     for col in features:
         meteorological_df = create_lag_features(meteorological_df, col, lag_values)
     print("create_lag_meteorological_features", meteorological_df)

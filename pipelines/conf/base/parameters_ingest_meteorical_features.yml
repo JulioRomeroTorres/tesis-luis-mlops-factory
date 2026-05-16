@@ -13,7 +13,7 @@ senamhi_enpoint: "https://www.senamhi.gob.pe/site/sea/www/site/sea/graficas/dato
 
 db_name: "meteorological-data"
 table_name_mock: "senamhi-information"
-table_name: "pm25-inference" #pm25-inference
+table_name: "pm25-target" #pm25-inference
 
 features_names_mock:
   - 'VELO'

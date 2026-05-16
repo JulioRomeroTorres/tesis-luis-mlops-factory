@@ -2,12 +2,14 @@
 # using Kedro 0.19.15.
 #
 # Documentation for this file format can be found in "Parameters"
+#start_period: "01/03/202502:00:"
+#end_period: "15/04/202601:00:"
 # Link: https://docs.kedro.org/en/0.19.15/configuration/parameters.html
 start_period: "01/03/2025"
 end_period: "15/04/2026"
 
 feature_table_name: "senamhi-information"
-target_table_name: "pm25-inference"
+target_table_name: "pm25-target"
 
 hyperparameters:
   n_estimators: 2590
@@ -32,6 +34,7 @@ lag_features:
   
 lag_target: 
   - 1
+  - 2
   - 24
 
 datetime_column_name: 'READING_DATETIME'

@@ -149,8 +149,7 @@ def create_cyclic_features(df: pd.DataFrame, col: str, period: int) -> pd.DataFr
 
 def create_lag_features(df: pd.DataFrame, column: str, lags: int)  -> pd.DataFrame:
     for lag in lags:
-        print("column", column, lag)
-        print("joo")
+        print(f"column {column} this lag {lag} from {lags}")
         df[f'{column}_lag_{lag}'] = df[column].shift(int(lag))
     return df
 
@@ -159,3 +158,12 @@ def create_rolling_features(df: pd.DataFrame, column: str, windows: int) -> pd.D
         df[f'{column}_rolling_mean_{window}'] = df[column].rolling(window=int(window)).mean()
         df[f'{column}_rolling_std_{window}'] = df[column].rolling(window=int(window)).std()
     return df
+
+
+def recover_dummy_column(df_dummies, prefix='LABEL_STATION_ID'):
+
+    dummy_cols = [col for col in df_dummies.columns if col.startswith(prefix)]
+    station_id = df_dummies[dummy_cols].idxmax(axis=1)
+    station_id = station_id.str.replace(f'{prefix}_', '')
+    
+    return station_id

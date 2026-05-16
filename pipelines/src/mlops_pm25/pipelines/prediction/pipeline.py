@@ -129,9 +129,18 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "params:start_period",
                      "params:end_period"
                      ],
-            outputs=None,
+            outputs="predicted_pm25",
             name="Predict_PM25"
+        ),
+
+        node(
+            func= save_predictions,
+            inputs= [
+                    "params:db_name",
+                    "params:prediction_table_name",
+                    "predicted_pm25"
+                     ],
+            outputs=None,
+            name="Save_pm25_predictions"
         )
-
-
     ])

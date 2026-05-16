@@ -121,7 +121,7 @@ def predict(
     concated_df = pd.concat([information_station, df_prediction], axis=1)
 
     if lastest_datetime:
-        latest_datetime_value = ( get_current_datetime()-timedelta(hours=5).strftime("%d/%m/%Y%H:00:"))
+        latest_datetime_value = ( (get_current_datetime()-timedelta(hours=5)).strftime("%d/%m/%Y%H:00:"))
         return concated_df[concated_df['READING_DATETIME'] == latest_datetime_value]
     return concated_df 
 

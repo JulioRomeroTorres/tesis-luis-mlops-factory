@@ -20,8 +20,9 @@ async def get_pm25_prediction(datetime_inference: str, station_id: str):
     inference_value = await handle_get_agents.get_inference(datetime_inference, station_id)
     return JSONResponse(inference_value.model_dump(), headers={"status_code": "200"})
 
-@router.post("/comparation/")
-async def create_agent(lower_limit_datetime_inference: str, upper_limit_datetime_inference: str, station_id: str):
+@router.get("/comparation/")
+async def compare_prediction(lower_limit_datetime_inference: str, upper_limit_datetime_inference: str, station_id: str):
     handle_get_agents = get_handle_inference_use_case()
-
-    return JSONResponse({}, headers={"status_code": "200"})
+    comparation_value = await handle_get_agents.compare_prediction(lower_limit_datetime_inference, upper_limit_datetime_inference, station_id)
+    formatted_comparation = [ value.model_dump() for value in comparation_value]
+    return JSONResponse(formatted_comparation, headers={"status_code": "200"})

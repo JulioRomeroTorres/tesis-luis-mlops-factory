@@ -18,6 +18,10 @@ class CollectionPlaygroundEnum(Enum):
     METRICS_INFORMATION = 'metrics_evaluation'
     EVALUATION_DETAILS_INFORMATION = 'evaluations_details_information'
 
+class CollectionInferenceEnum(Enum):
+    INFERENCE_PM25 = 'pm25-inference'
+    MEASURED_PM25 = 'pm25-target'
+
 class ContainerStorageAccountEnum(Enum):
     FILES_CONTAINER = 'ctnreu2aiasd02'
 

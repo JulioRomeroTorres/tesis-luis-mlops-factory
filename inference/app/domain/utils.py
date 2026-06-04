@@ -5,7 +5,7 @@ import io
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Union, Tuple
 from uuid import uuid4, UUID
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from urllib.parse import urlparse
 from app.domain.contants import MEDIA_FILE_MAPPER, DEFAULT_DT_FORMAT
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -116,3 +116,18 @@ def get_full_name_agent(agent_id: str, pool_agent_informatio):
     selected_agent = pool_agent_informatio.get(agent_id)
     print("selected_agent", selected_agent)
     return f"{selected_agent.get("name")}:{selected_agent.get("version")}"
+
+def get_dummy_date_range(lower_limit_datetime_str: str, upper_limit_datetime_str: str):
+    lower_datetime = datetime.strptime(lower_limit_datetime_str, "%d/%m/%Y%H:%M:")
+    upper_datetime = datetime.strptime(upper_limit_datetime_str, "%d/%m/%Y%H:%M:")
+
+    str_date_range = []
+    while (lower_datetime <= upper_datetime):
+        lower_datetime += timedelta(hours=1)
+        str_date_range.append(lower_datetime.strftime('%d/%m/%Y%H:%M:'))
+    
+    return str_date_range
+
+def get_information_from_dict(source_dict, principal_key: str, additional_key: str):
+    value = source_dict.get(principal_key, None)
+    return None if value is None else value.get(additional_key, None)

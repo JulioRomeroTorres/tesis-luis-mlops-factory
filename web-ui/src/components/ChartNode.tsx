@@ -30,18 +30,18 @@ type ChartNodeData = {
 
 export const ChartNode = ({ data }: NodeProps<Node<ChartNodeData>>) => {
   const chartData = {
-    labels: data.points.map(p => p.date_information),
+    labels: data.points.map(p => p.reading_datetime),
     datasets: [
       {
         label: 'Predicción',
-        data: data.points.map(p => p.variable_1),
+        data: data.points.map(p => p.predicted),
         borderColor: 'orange',
         backgroundColor: 'rgba(255, 165, 0, 0.5)',
         tension: 0.1
       },
       {
         label: 'Variable 2',
-        data: data.points.map(p => p.variable_2),
+        data: data.points.map(p => p.measured),
         borderColor: 'blue',
         backgroundColor: 'rgba(0, 0, 255, 0.5)',
         tension: 0.1

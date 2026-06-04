@@ -29,11 +29,11 @@ interface StandardChartProps {
 
 export const StandardChart = ({ points }: StandardChartProps) => {
   const chartData = {
-    labels: points.map(p => p.date_information),
+    labels: points.map(p => p.reading_datetime),
     datasets: [
       {
         label: 'Predicción',
-        data: points.map(p => p.variable_1),
+        data: points.map(p => p.predicted),
         borderColor: 'orange',
         backgroundColor: 'rgba(255, 165, 0, 0.2)',
         borderWidth: 3,
@@ -44,7 +44,7 @@ export const StandardChart = ({ points }: StandardChartProps) => {
       },
       {
         label: 'Lectura Senamhi',
-        data: points.map(p => p.variable_2),
+        data: points.map(p => p.measured),
         borderColor: 'blue',
         backgroundColor: 'rgba(0, 0, 255, 0.1)',
         borderWidth: 3,

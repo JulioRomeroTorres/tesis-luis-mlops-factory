@@ -1,7 +1,7 @@
 export interface DataPoint {
-  date_information: string;
-  variable_1: number;
-  variable_2: number;
+  reading_datetime: string;
+  measured: number;
+  predicted: number;
 }
 
 export interface ChartData {

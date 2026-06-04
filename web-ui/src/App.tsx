@@ -2,32 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { StandardChart } from './components/StandardChart';
 import { DataPoint } from './types';
+import { getComparation } from './api/inference';
 
 export default function App() {
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFetch = useCallback(async (start: string, end: string) => {
+  const handleFetch = useCallback(async (stationId:string, start: string, end: string) => {
     setIsLoading(true);
 
     try {
       console.log(`Fetching telemetry data from ${start} to ${end}`);
-      
-      // Simulating API latency
-      await new Promise(resolve => setTimeout(resolve, 1000)); 
-      
-      const mockData: DataPoint[] = [
-        { "date_information": "10:00:00 12/10/2023", "variable_1": 11, "variable_2": 12 },
-        { "date_information": "11:00:00 12/10/2023", "variable_1": 13, "variable_2": 14 },
-        { "date_information": "12:00:00 12/10/2023", "variable_1": 25, "variable_2": 8 },
-        { "date_information": "13:00:00 12/10/2023", "variable_1": 18, "variable_2": 22 },
-        { "date_information": "14:00:00 12/10/2023", "variable_1": 30, "variable_2": 15 },
-        { "date_information": "15:00:00 12/10/2023", "variable_1": 22, "variable_2": 19 },
-        { "date_information": "16:00:00 12/10/2023", "variable_1": 28, "variable_2": 25 },
-        { "date_information": "17:00:00 12/10/2023", "variable_1": 15, "variable_2": 30 },
-      ];
-
-      setDataPoints(mockData);
+      const environmentalData: DataPoint[] = await getComparation(stationId, start, end)
+      setDataPoints(environmentalData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -41,7 +28,7 @@ export default function App() {
         <header className="mb-10 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-              AI AGENT <span className="text-blue-600">HUB</span>
+              Tesis  <span className="text-blue-600">Luis Romero</span> 
             </h1>
             <p className="text-slate-500 font-medium">Environmental Telemetry Dashboard</p>
           </div>

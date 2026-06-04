@@ -63,3 +63,5 @@ telemetry_output
 
 *.vscode
 gcp-key.json
+
+node_modules/

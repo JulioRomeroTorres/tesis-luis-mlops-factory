@@ -2,6 +2,10 @@ import { DataPoint } from "../types";
 
 const BASE_PATH = import.meta.env.VITE_API_URL || 'https://model-backend-734156824859.us-east4.run.app';
 
+const BACKEND_ENDPOINTS = {
+  GET_COMPARATION: '/api/v1/prediction/comparation/'
+}
+
 export const getComparation = async (stationId: string, lowerDatetimeLimit: string, upperDatetimeLimit: string): Promise<DataPoint[]> => {
     
   const params = new URLSearchParams({
@@ -10,7 +14,7 @@ export const getComparation = async (stationId: string, lowerDatetimeLimit: stri
     upper_limit_datetime_inference: upperDatetimeLimit
   });
 
-  const completedUrl = `${BASE_PATH}?${params}`;
+  const completedUrl = `${BASE_PATH}${BACKEND_ENDPOINTS.GET_COMPARATION}?${params}`;
   
   try{
     const response = await fetch(completedUrl);

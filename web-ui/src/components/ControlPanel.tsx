@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
+
+const STATIONS = [
+  { station_id: '112265', name: 'Estation 1' },
+  { station_id: '111287', name: 'Estation 2' },
+  { station_id: '111286', name: 'Estation 3' },
+  { station_id: '112193', name: 'Estation 4' },
+  { station_id: '112233', name: 'Estation 5' }
+];
 
 interface ControlPanelProps {
   onFetch: (stationId: string, startDate: string, endDate: string) => void;
   isLoading: boolean;
+}
+
+const formatIsoDateFormat = (dateValue: Date): string => {
+  return format(dateValue, 'dd/MM/yyyyHH:mm:');
 }
 
 export const ControlPanel = ({ onFetch, isLoading }: ControlPanelProps) => {
@@ -13,6 +26,11 @@ export const ControlPanel = ({ onFetch, isLoading }: ControlPanelProps) => {
 
   const handleFetch = () => {
     setError(null);
+
+    if (!stationId) {
+      setError("Validation Error: Please select a station.");
+      return;
+    }
 
     let finalStart = startDate;
     let finalEnd = endDate;
@@ -44,13 +62,28 @@ export const ControlPanel = ({ onFetch, isLoading }: ControlPanelProps) => {
       setError("Validation Error: End date/hour must be strictly after the start date/hour.");
       return;
     }
-
-    onFetch(stationId, finalStart, finalEnd);
+    onFetch(stationId, formatIsoDateFormat(startObj), formatIsoDateFormat(endObj));
   };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-8">
       <div className="flex flex-wrap items-end gap-6">
+        <div className="flex-1 min-w-[200px] space-y-1">
+          <label className="text-xs font-bold text-gray-500 uppercase">Station</label>
+          <select
+            className="w-full bg-gray-50 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all"
+            value={stationId}
+            onChange={(e) => setStationId(e.target.value)}
+          >
+            <option value="">Select a Station</option>
+            {STATIONS.map((station) => (
+              <option key={station.station_id} value={station.station_id}>
+                {station.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex-1 min-w-[200px] space-y-1">
           <label className="text-xs font-bold text-gray-500 uppercase">Start Date & Hour</label>
           <input
@@ -114,3 +147,4 @@ export const ControlPanel = ({ onFetch, isLoading }: ControlPanelProps) => {
     </div>
   );
 };
+

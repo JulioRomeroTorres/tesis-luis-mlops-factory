@@ -125,6 +125,9 @@ def predict(
         return concated_df[concated_df['READING_DATETIME'] == latest_datetime_value]
     return concated_df 
 
+def convert_type_predicted_columns(current_df: pd.DataFrame):
+    current_df['READING_DATETIME'] = current_df['READING_DATETIME'].dt.strftime('%d/%m/%Y%H:%M:')
+    return current_df
 
 def save_predictions(db_name: str, table_name: str, prediction: pd.DataFrame):
     print("Save this predictions", prediction)

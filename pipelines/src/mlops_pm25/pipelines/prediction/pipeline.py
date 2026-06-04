@@ -11,7 +11,7 @@ from mlops_pm25.pipelines.commons.nodes import (
 )
 from .nodes import (
     get_features, create_template_datetime_df, create_source_dataset,
-    predict, save_predictions
+    predict, save_predictions, convert_type_predicted_columns
 ) 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -134,11 +134,18 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
 
         node(
+            func= convert_type_predicted_columns,
+            inputs= ["predicted_pm25"],
+            outputs="converted_type_predicted_pm25",
+            name="Converted_Prediction_Values"
+        ),
+
+        node(
             func= save_predictions,
             inputs= [
                     "params:db_name",
                     "params:prediction_table_name",
-                    "predicted_pm25"
+                    "converted_type_predicted_pm25"
                      ],
             outputs=None,
             name="Save_pm25_predictions"

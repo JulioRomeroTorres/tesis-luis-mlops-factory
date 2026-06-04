@@ -38,6 +38,8 @@ steps:
   - '--platform'
   - 'managed'
   - '--allow-unauthenticated'
+  - '--port'
+  - '5173' 
   - '--set-env-vars'
   - '^#^GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json'
 

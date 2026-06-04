@@ -2,6 +2,16 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['auth', 'configure-docker', '${_CONT_REGISTRY_NAME}']
 
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    echo '${_GCP_SA_KEY_BASE64}' | base64 -d > inference/gcp-sa-key.json
+    # Verificar que el JSON es válido
+    cat inference/gcp-sa-key.json | jq .
+    echo "✅ Archivo creado correctamente"
+
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 
@@ -24,12 +34,12 @@ steps:
   - '--image'
   - '${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest'
   - '--region'
-  - '${_CLOUD_RUN_REGION}'
+  - 'us-east4'
   - '--platform'
   - 'managed'
   - '--allow-unauthenticated'
   - '--set-env-vars'
-  - '^#^ENV=${_DAG_ENV}#DATABASE_URL=${_DATABASE_URL}#API_KEY=${_API_KEY}#SECRET_KEY=${_SECRET_KEY}'
+  - '^#^GOOGLE_APPLICATION_CREDENTIALS=gcp-sa-key.json'
 
 
 images: ['${_CONT_REGISTRY_NAME}/${_PROJECT_ID}/${_CONT_REPOSITORY_NAME}/${_CONT_API_IMAGE_NAME}:latest']

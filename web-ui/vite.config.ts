@@ -32,6 +32,10 @@ export default defineConfig(() => {
     server: {
       port: frontendPort,
       proxy,
+      allowedHosts: [
+      'web-ui-734156824859.us-east4.run.app',
+      '.run.app' // Permitir todos los subdominios de run.app
+    ]
     }
   }
 })

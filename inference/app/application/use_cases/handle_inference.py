@@ -26,7 +26,7 @@ class HandleInferenceUseCase:
             self.inference_manager.get_measured_pm25_from_range_date(station_id, lower_limit_datetime_inference, upper_limit_datetime_inference)
         )
 
-        dict_predictions = {prediction["READING_DATETIME"]: prediction for prediction in predictions}
+        dict_predictions = {f"{prediction["READING_DATETIME"].strftime("%d/%m/%Y%H:%M:")}" : prediction for prediction in predictions}
         dict_measured_values = {measured_value["READING_DATETIME"]: measured_value for measured_value in measured_values}
 
         date_range = get_dummy_date_range(lower_limit_datetime_inference, upper_limit_datetime_inference)

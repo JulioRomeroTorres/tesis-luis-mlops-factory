@@ -122,9 +122,11 @@ def predict(
     concated_df = pd.concat([information_station, df_prediction], axis=1)
 
     if lastest_datetime:
-        latest_datetime_value = ( (get_current_datetime()-timedelta(hours=5)).strftime("%d/%m/%Y%H:00:"))
+        latest_datetime_value = (get_current_datetime()-timedelta(hours=5))
         print("Current Filter Predictions")
         print(concated_df['READING_DATETIME'])
+        print("\nTipos de todas las columnas:")
+        print(concated_df.dtypes)
 
         print(f"Current Datetime {get_current_datetime()} Datetime to filter {latest_datetime_value}")
         

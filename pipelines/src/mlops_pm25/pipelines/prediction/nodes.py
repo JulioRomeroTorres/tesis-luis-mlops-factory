@@ -28,17 +28,17 @@ def get_features(db_name: str, table_name: str, features_names: List[str], start
 def create_template_datetime_df(start_period: str, end_period: str, station_ids: List[str]) -> pd.DataFrame:
 
     end_period = ( ( get_current_datetime()-timedelta(hours=5) )) if is_str_none(end_period) else  datetime.strptime(end_period, '%d/%m/%Y%H:%M:') 
-    start_period = ( ( get_current_datetime()-timedelta(hours=41)))  if is_str_none(start_period) else datetime.strptime(start_period, '%d/%m/%Y%H:%M:') 
+    start_period = ( ( get_current_datetime()-timedelta(hours=42)))  if is_str_none(start_period) else datetime.strptime(start_period, '%d/%m/%Y%H:%M:') 
 
     completed_datetime_list = []
     default_station_id_list = []
 
     while(start_period <= end_period):
+        start_period = start_period + timedelta(hours=1)
         completed_datetime_list.append(
             start_period.strftime("%d/%m/%Y%H:00:")
         )
-        start_period = start_period + timedelta(hours=1)
-
+    print("completed_datetime_list {completed_datetime_list}")
     total_hours_list = len(completed_datetime_list)
     
     for station_id in station_ids:
@@ -54,6 +54,7 @@ def create_template_datetime_df(start_period: str, end_period: str, station_ids:
                                     "STATION_ID": default_station_id_list
                                     })  
     print(df_datetimes.head())
+    print(f"Latest element {df_datetimes.iloc[-1]}")
     return  df_datetimes
 
 def create_source_dataset(template_datetime_df: pd.DataFrame, features_df: pd.DataFrame, pm25_df: pd.DataFrame ):

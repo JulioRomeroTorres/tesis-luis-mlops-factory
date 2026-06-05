@@ -107,6 +107,8 @@ def get_meteorological_features(
         projections=[*features_names, 'READING_DATETIME']
         )
     df = pd.DataFrame(elements)
+    
+    print("Metheorlogical variables", df)
 
     return df.dropna()
 

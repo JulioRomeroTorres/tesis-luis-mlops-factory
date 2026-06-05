@@ -132,20 +132,12 @@ def create_pipeline(**kwargs) -> Pipeline:
             outputs="predicted_pm25",
             name="Predict_PM25"
         ),
-
-        node(
-            func= convert_type_predicted_columns,
-            inputs= ["predicted_pm25"],
-            outputs="converted_type_predicted_pm25",
-            name="Converted_Prediction_Values"
-        ),
-
         node(
             func= save_predictions,
             inputs= [
                     "params:db_name",
                     "params:prediction_table_name",
-                    "converted_type_predicted_pm25"
+                    "predicted_pm25"
                      ],
             outputs=None,
             name="Save_pm25_predictions"

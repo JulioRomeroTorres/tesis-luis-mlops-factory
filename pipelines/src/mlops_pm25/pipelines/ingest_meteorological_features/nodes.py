@@ -71,6 +71,10 @@ def get_meteorological_data_by_station(
     meteorological_df = pd.concat(lista_dfs, ignore_index=True)
     return meteorological_df
 
+def add_date_columns(source_df: pd.DataFrame):
+    source_df['FORMATED_READING_DATETIME'] = pd.to_datetime(source_df['READING_DATETIME'], format='%d/%m/%Y%H:%M:')
+    return source_df
+
 def ingest_features(db_name: str, table_name: str, data: pd.DataFrame):
     db_client = FireStoreClient(db_name, table_name)
     print("New Data", data.head())

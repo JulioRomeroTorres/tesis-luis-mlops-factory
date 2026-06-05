@@ -122,6 +122,12 @@ def predict(
 
     if lastest_datetime:
         latest_datetime_value = ( (get_current_datetime()-timedelta(hours=5)).strftime("%d/%m/%Y%H:00:"))
+        print("Current Filter Predictions")
+        print(concated_df['READING_DATETIME'])
+
+        print(f"Current Datetime {get_current_datetime()} Datetime to filter {latest_datetime_value}")
+        
+
         return concated_df[concated_df['READING_DATETIME'] == latest_datetime_value]
     return concated_df 
 

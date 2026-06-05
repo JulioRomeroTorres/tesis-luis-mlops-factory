@@ -4,7 +4,7 @@ generated using Kedro 0.19.15
 """
 
 from kedro.pipeline import node, Pipeline, pipeline  # noqa
-from .nodes import get_meteorological_data_by_station, ingest_features
+from .nodes import get_meteorological_data_by_station, ingest_features, add_date_columns    
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([
@@ -17,8 +17,14 @@ def create_pipeline(**kwargs) -> Pipeline:
             name="Get_Meteorolofical_data"
         ),
         node(
+            func= add_date_columns,
+            inputs= ["meteorological_data"],
+            outputs="formatted_meteorological_data",
+            name="Add_Formatted_Date_Columns"
+        ),
+        node(
             func= ingest_features,
-            inputs= ["params:db_name", "params:table_name", "meteorological_data"],
+            inputs= ["params:db_name", "params:table_name", "formatted_meteorological_data"],
             outputs=None,
             name="Ingest_feature"
         ),

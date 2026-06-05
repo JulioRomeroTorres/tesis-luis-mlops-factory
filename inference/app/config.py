@@ -20,7 +20,8 @@ class Settings(BaseSettings):
         "http://localhost:3001",
         "http://localhost:5173",
         "http://127.0.0.1:3000",
-        "http://20.14.210.156:3001"
+        "http://20.14.210.156:3001",
+        "https://web-ui-734156824859.us-east4.run.app"
     ]
     
     firestore_db_name: Optional[str] = os.getenv("FIRESTORE_DB_NAME")

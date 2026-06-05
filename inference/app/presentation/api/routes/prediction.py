@@ -18,7 +18,7 @@ router = APIRouter(
 async def get_pm25_prediction(datetime_inference: str, station_id: str):
     handle_get_agents = get_handle_inference_use_case()
     inference_value = await handle_get_agents.get_inference(datetime_inference, station_id)
-    return JSONResponse(inference_value.model_dump(), headers={"status_code": "200"})
+    return JSONResponse(inference_value.format_json(), headers={"status_code": "200"})
 
 @router.get("/comparation/")
 async def compare_prediction(lower_limit_datetime_inference: str, upper_limit_datetime_inference: str, station_id: str):

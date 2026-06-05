@@ -9,6 +9,7 @@ class InferenceManager:
 
     async def get_inference(self, selected_period: str, station_id: str):
         collection_name = "pm25-inference"
+        selected_period = datetime.strptime(selected_period, "%d/%m/%Y%H:%M:")
         inference = await self.db_repository.get_items_by_filter(
             [
                 ("READING_DATETIME", "==", selected_period),

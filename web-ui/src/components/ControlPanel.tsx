@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 
 const STATIONS = [
-  { station_id: '112265', name: 'Estation 1' },
-  { station_id: '111287', name: 'Estation 2' },
-  { station_id: '111286', name: 'Estation 3' },
-  { station_id: '112193', name: 'Estation 4' },
-  { station_id: '112233', name: 'Estation 5' }
+  { station_id: '112265', name: 'San Martin de Porres' },
+  { station_id: '111287', name: 'Puente Piedra' },
+  { station_id: '111286', name: 'Carabayllo' },
+  { station_id: '112193', name: 'San Borja' },
+  { station_id: '112233', name: 'Villa María del Triunfo' }
 ];
 
 interface ControlPanelProps {
